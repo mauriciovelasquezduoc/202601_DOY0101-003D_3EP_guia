@@ -83,4 +83,40 @@ EOF
 ```
 
 
-![1780427684321](image/Readme/1780427684321.png)
+![1780427996849](image/Readme/1780427996849.png)
+
+
+## Iniciar el servicio de agente
+
+```
+systemctl start amazon-cloudwatch-agent
+```
+
+![1780428079027](image/Readme/1780428079027.png)
+
+
+## Verificar el funcionamiento
+
+```
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status
+```
+
+![1780428159969](image/Readme/1780428159969.png)
+
+
+## Ahora vamos a buscar en cloudWatch
+
+![1780428236287](image/Readme/1780428236287.png)
+
+
+## Todas las metricas
+
+
+
+![1780428284260](image/Readme/1780428284260.png)
+
+
+
+## Acceso a los registros
+
+![1780428321265](image/Readme/1780428321265.png)
