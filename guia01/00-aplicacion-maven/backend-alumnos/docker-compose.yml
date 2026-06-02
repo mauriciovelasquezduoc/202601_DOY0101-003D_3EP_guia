@@ -1,0 +1,68 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: alumnos-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: alumnosdb
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - alumnos-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+        limits:
+          cpus: '0.50'
+          memory: 512M
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: alumnos-app:latest
+    container_name: alumnos-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/alumnosdb
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    networks:
+      - alumnos-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/alumnos"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+        limits:
+          cpus: '0.50'
+          memory: 512M
+volumes:
+  mysql_data:
+networks:
+  alumnos-network:

@@ -1,0 +1,129 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# .gitignore — Maven / Spring Boot
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Java ──────────────────────────────────────────────────────────────────────
+*.class
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+# Excluir jars compilados
+*.jar
+
+# ── IntelliJ IDEA ─────────────────────────────────────────────────────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# ── Eclipse ───────────────────────────────────────────────────────────────────
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# ── VS Code ───────────────────────────────────────────────────────────────────
+.vscode/
+
+# ── NetBeans ──────────────────────────────────────────────────────────────────
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-maven/
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ── Windows ───────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ── Linux ─────────────────────────────────────────────────────────────────────
+*~
+
+# ── Maven ────────────────────────────────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.m2/
+
+# ── Spring Boot ───────────────────────────────────────────────────────────────
+# Archivos de configuración con secretos (NUNCA commitear)
+application-local.yml
+application-local.properties
+application-secrets.yml
+application-secrets.properties
+
+# ── Secretos y credenciales ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.truststore
+secrets/
+credentials/
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+# No ignorar Dockerfile ni docker-compose.yml (son parte del proyecto)
+# Ignorar archivos de override locales
+docker-compose.override.yml
+docker-compose.local.yml
+
+# ── Reportes de tests y cobertura (generados automáticamente) ─────────────────
+# JaCoCo
+target/site/jacoco/
+
+# Pitest
+target/pit-reports/
+
+# Cucumber
+target/cucumber-reports/
+
+# Surefire / test results
+target/surefire-reports/
+target/failsafe-reports/
+
+# ── Reportes de seguridad (generados por Snyk/SonarQube) ─────────────────────
+snyk.sarif
+sonar-project.properties.bak
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+logs/
+spring.log
+
+# ── Archivos temporales ───────────────────────────────────────────────────────
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+tmp/
+temp/
+
+# ── Kubernetes — secretos reales (NUNCA commitear valores reales) ─────────────
+# La plantilla k8s/secret.yaml SÍ se commitea (sin valores reales)
+k8s/*-secret-values.yaml
+k8s/*.sealed.yaml

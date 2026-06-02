@@ -1,0 +1,22 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# LAB:    ClusterIP interno (usar port-forward para acceder)
+#         kubectl port-forward svc/alumnos-app-service 8080:80 -n default
+# AWS:    Agregar un Ingress o LoadBalancer para exponer al exterior
+# ══════════════════════════════════════════════════════════════════════════════
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: alumnos-app-service
+  namespace: default
+  labels:
+    app: alumnos-app
+spec:
+  selector:
+    app: alumnos-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP

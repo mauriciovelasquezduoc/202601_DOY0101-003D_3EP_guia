@@ -1,0 +1,11 @@
+spring:
+  config.activate.on-profile: prod
+  datasource:
+    url: jdbc:mysql://mysql:3306/alumnosdb?useSSL=false&serverTimezone=UTC
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: appuser
+    password: apppass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQLDialect

@@ -1,0 +1,49 @@
+name: Autoevaluacion DevOps
+
+on:
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+
+  autoevaluacion:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repositorio alumno
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Descargar evaluador central
+        run: |
+          curl -L \
+          https://raw.githubusercontent.com/mauriciovelasquezduoc/2026-01-INGENIERIA-DEVOPS/refs/heads/main/ep02/evaluar.js \
+          -o evaluar.js
+
+      - name: Verificar archivo descargado
+        run: |
+          head -20 evaluar.js
+          
+      - name: Instalar dependencias evaluador
+        run: |
+          npm install fs-extra js-yaml glob
+
+      - name: Ejecutar autoevaluacion
+        run: |
+          node evaluar.js
+
+      - name: Publicar reporte
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-autoevaluacion-devops
+          path: revision/

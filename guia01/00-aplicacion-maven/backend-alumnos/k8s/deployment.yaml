@@ -1,0 +1,96 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# LAB: Perfil por defecto → H2 autónomo (no necesita MySQL)
+# AWS: Descomentar SPRING_PROFILES_ACTIVE=prod + variables JPA → RDS
+# ══════════════════════════════════════════════════════════════════════════════
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alumnos-app
+  namespace: default
+  labels:
+    app: alumnos-app
+    version: "1.0.0"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: alumnos-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: alumnos-app
+        version: "1.0.0"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: alumnos-app
+          image: ghcr.io/OWNER/alumnos-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            # ── LAB: sin perfil explícito → H2 (application.yml) ──────────
+            # ── AWS: descomentar la línea de abajo para activar prod ─────
+            # - name: SPRING_PROFILES_ACTIVE
+            #   value: "prod"
+
+            # ── Datasource desde Secret ──────────────────────────────────
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: alumnos-db-secret
+                  key: datasource-url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: alumnos-db-secret
+                  key: datasource-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: alumnos-db-secret
+                  key: datasource-password
+
+            # ── AWS: descomentar estas 2 para forzar MySQL ───────────────
+            #   (el perfil prod ya las define, pero aquí quedan explícitas)
+            # - name: SPRING_JPA_DATABASE_PLATFORM
+            #   value: "org.hibernate.dialect.MySQLDialect"
+            # - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+            #   value: "validate"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          livenessProbe:
+            httpGet:
+              path: /alumnos
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /alumnos
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL

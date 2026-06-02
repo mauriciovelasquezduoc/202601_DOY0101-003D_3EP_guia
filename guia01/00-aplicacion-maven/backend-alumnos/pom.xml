@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ── Spring Boot parent (BOM + plugin management) ─────────────────────── -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.5.3</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>cl.duocuc.alumnos</groupId>
+    <artifactId>alumnos-app</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>alumnos-app</name>
+    <description>CRUD de alumnos con CSV — Spring Boot + Maven</description>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- PROPIEDADES                                                            -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <properties>
+        <java.version>21</java.version>
+
+        <!-- Forzar versión segura de Tomcat (fix CVEs) — Spring Boot 3.5.3 trae 10.1.42 -->
+        <tomcat.version>10.1.54</tomcat.version>
+
+        <!-- Versiones de plugins externos (no gestionados por el parent) -->
+        <jacoco.version>0.8.13</jacoco.version>
+        <pitest.version>1.18.2</pitest.version>
+        <pitest-junit5.version>1.2.1</pitest-junit5.version>
+        <spring-cloud-contract.version>4.2.1</spring-cloud-contract.version>
+        <openrewrite.version>7.32.0</openrewrite.version>
+        <spotless.version>2.43.0</spotless.version>
+        <pmd.version>3.26.0</pmd.version>
+        <cucumber.version>7.20.1</cucumber.version>
+        <junit-platform.version>1.11.4</junit-platform.version>
+        <springdoc.version>2.8.17</springdoc.version>
+        <rewrite-migrate.version>3.31.0</rewrite-migrate.version>
+        <rewrite-spring.version>6.13.0</rewrite-spring.version>
+        <rewrite-static.version>2.15.0</rewrite-static.version>
+        <spring-cloud-contract-verifier.version>4.2.3</spring-cloud-contract-verifier.version>
+
+        <!-- Byte Buddy experimental flag (requerido para Java 21+) -->
+        <bytebuddy.arg>-Dnet.bytebuddy.experimental=true</bytebuddy.arg>
+
+        <!-- JaCoCo report paths -->
+        <jacoco.report.path>${project.build.directory}/site/jacoco/jacoco.xml</jacoco.report.path>
+
+        <!-- ── SonarCloud ───────────────────────────────────────────────────── -->
+        <sonar.projectKey>mauriciovelasquezduoc_202601_DOY0101-003D_sprintboot_gradle</sonar.projectKey>
+        <sonar.organization>mauriciovelasquezduoc</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.exclusions>.github/**,k8s/**,docs/**</sonar.exclusions>
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
+        <sonar.newCode.referenceBranch>main</sonar.newCode.referenceBranch>
+        <sonar.qualitygate.wait>false</sonar.qualitygate.wait>
+        <sonar.qualitygate.timeout>300</sonar.qualitygate.timeout>
+    </properties>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- DEPENDENCIAS                                                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <dependencies>
+
+        <!-- ── Spring Boot starters ────────────────────────────────────────── -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- ── Lombok ──────────────────────────────────────────────────────── -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- ── OpenAPI / Swagger ───────────────────────────────────────────── -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
+
+        <!-- ── Base de datos ───────────────────────────────────────────────── -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- H2 para perfil dev (default) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- ── Tests ───────────────────────────────────────────────────────── -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Cucumber — tests de aceptación -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit-platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-engine</artifactId>
+            <version>${junit-platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>${junit-platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Spring Cloud Contract — tests de contrato -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-contract-verifier</artifactId>
+            <version>${spring-cloud-contract-verifier.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- BUILD: PLUGINS                                                         -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <build>
+        <plugins>
+
+            <!-- ── Compilador Java 21 + Lombok annotation processor ────────── -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- ── Spring Boot ─────────────────────────────────────────────── -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- ── Surefire — tests unitarios (JUnit 5 + Cucumber) ─────────── -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${bytebuddy.arg} @{argLine}</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- ── Failsafe — tests de integración (incluye contract tests) ── -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <argLine>${bytebuddy.arg} @{argLine}</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- ── JaCoCo — cobertura de código (mínimo 80%) ───────────────── -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals><goal>prepare-agent</goal></goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals><goal>report</goal></goals>
+                    </execution>
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- ── Pitest — mutation testing (mínimo 80%) ──────────────────── -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>${pitest.version}</version>
+                <configuration>
+                    <targetClasses>
+                        <param>cl.duocuc.alumnos.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>cl.duocuc.alumnos.*</param>
+                    </targetTests>
+                    <mutationThreshold>80</mutationThreshold>
+                    <coverageThreshold>80</coverageThreshold>
+                    <outputFormats>
+                        <value>HTML</value>
+                        <value>XML</value>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
+                    <jvmArgs>
+                        <value>${bytebuddy.arg}</value>
+                    </jvmArgs>
+                    <threads>2</threads>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>${pitest-junit5.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- ── Spring Cloud Contract — tests de contrato ───────────────── -->
+            <plugin>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-contract-maven-plugin</artifactId>
+                <version>${spring-cloud-contract.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <testFramework>JUNIT5</testFramework>
+                    <baseClassForTests>cl.duocuc.alumnos.contract.AlumnoContractBase</baseClassForTests>
+                    <contractsDslDir>src/test/resources/contracts</contractsDslDir>
+                </configuration>
+            </plugin>
+
+            <!-- ── OpenRewrite — refactoring automático ────────────────────── -->
+            <plugin>
+                <groupId>org.openrewrite.maven</groupId>
+                <artifactId>rewrite-maven-plugin</artifactId>
+                <version>${openrewrite.version}</version>
+                <configuration>
+                    <activeRecipes>
+                        <recipe>org.openrewrite.java.migrate.UpgradeToJava21</recipe>
+                        <recipe>org.openrewrite.staticanalysis.CommonStaticAnalysis</recipe>
+                        <recipe>org.openrewrite.staticanalysis.UnnecessaryThrows</recipe>
+                        <recipe>org.openrewrite.staticanalysis.SimplifyBooleanExpression</recipe>
+                        <recipe>org.openrewrite.java.RemoveUnusedImports</recipe>
+                    </activeRecipes>
+                    <exclusions>
+                        <exclusion>build/generated-test-sources/**</exclusion>
+                        <exclusion>build/generated-sources/**</exclusion>
+                    </exclusions>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-migrate-java</artifactId>
+                        <version>${rewrite-migrate.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-spring</artifactId>
+                        <version>${rewrite-spring.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.openrewrite.recipe</groupId>
+                        <artifactId>rewrite-static-analysis</artifactId>
+                        <version>${rewrite-static.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- ── Spotless — formateo y limpieza de código ────────────────── -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <importOrder>
+                            <order>java,javax,org,com,</order>
+                        </importOrder>
+                        <removeUnusedImports/>
+                        <trimTrailingWhitespace/>
+                        <indent>
+                            <spaces>true</spaces>
+                            <spacesPerTab>4</spacesPerTab>
+                        </indent>
+                        <endWithNewline/>
+                    </java>
+                </configuration>
+            </plugin>
+
+            <!-- ── PMD — análisis estático de reglas de calidad ────────────── -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${pmd.version}</version>
+                <configuration>
+                    <rulesets>
+                        <ruleset>config/pmd/ruleset.xml</ruleset>
+                    </rulesets>
+                    <failOnViolation>true</failOnViolation>
+                    <linkXRef>false</linkXRef>
+                    <includeTests>true</includeTests>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- REPOSITORIOS                                                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
+</project>
