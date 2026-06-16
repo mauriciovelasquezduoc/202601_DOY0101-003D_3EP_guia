@@ -303,13 +303,7 @@ jobs:
         id: login-ecr-deploy
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Aplicar namespace y manifests k8s
-        run: |
-          NAMESPACE="alumnos"
-          kubectl apply -f k8s/namespace.yaml
-          kubectl apply -f k8s/backend-deployment.yaml -n $NAMESPACE
-          kubectl apply -f k8s/backend-service.yaml -n $NAMESPACE
-          echo "✔ Manifests aplicados"
+
 
       - name: Actualizar imagen del deployment
         env:
