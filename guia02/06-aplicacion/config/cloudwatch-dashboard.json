@@ -1,0 +1,138 @@
+{
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# Dashboard de Observabilidad — EKS Cluster"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Uso de CPU por Pod",
+        "metrics": [
+          [ "ContainerInsights", "pod_cpu_utilization", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", "Pod", "alumnos-backend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-frontend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-db", { "stat": "Average", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "region": "us-east-1",
+        "period": 60
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Uso de Memoria por Pod",
+        "metrics": [
+          [ "ContainerInsights", "pod_memory_working_set", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", "Pod", "alumnos-backend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-frontend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-db", { "stat": "Average", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "region": "us-east-1",
+        "period": 60
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Tráfico de Red",
+        "metrics": [
+          [ "ContainerInsights", "pod_network_rx_bytes", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", { "stat": "Sum", "period": 60 } ],
+          [ "...", "pod_network_tx_bytes", { "stat": "Sum", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "region": "us-east-1",
+        "period": 60
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Tiempo de Despliegue",
+        "metrics": [
+          [ "Custom", "DeployDuration", "Service", "backend", { "stat": "Average", "period": 300 } ],
+          [ "...", "frontend", { "stat": "Average", "period": 300 } ]
+        ],
+        "view": "timeSeries",
+        "region": "us-east-1",
+        "period": 300,
+        "annotations": {
+          "horizontal": [{ "label": "Objetivo (<5 min)", "value": 300, "color": "#2ca02c" }]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Cobertura de Pruebas",
+        "metrics": [
+          [ "Custom", "TestCoverage", "Project", "backend", { "stat": "Average", "period": 86400 } ],
+          [ "...", "frontend", { "stat": "Average", "period": 86400 } ]
+        ],
+        "view": "timeSeries",
+        "region": "us-east-1",
+        "period": 86400,
+        "annotations": {
+          "horizontal": [{ "label": "Objetivo (>80%)", "value": 80, "color": "#2ca02c" }]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Estado de Pods",
+        "metrics": [
+          [ "ContainerInsights", "pod_number_of_container_status_running", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", { "stat": "Average", "period": 60, "label": "Running" } ],
+          [ "...", "pod_number_of_container_status_pending", { "stat": "Average", "period": 60, "label": "Pending" } ],
+          [ "...", "pod_number_of_container_status_failed", { "stat": "Average", "period": 60, "label": "Failed", "color": "#d62728" } ]
+        ],
+        "view": "timeSeries",
+        "region": "us-east-1",
+        "period": 60
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 13,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "title": "Últimos Errores en Logs",
+        "query": "SOURCE '/aws/eks/laboratorio-eks/application' | fields @timestamp, @message | filter @message like /ERROR|Exception/ | sort @timestamp desc | limit 20",
+        "region": "us-east-1",
+        "view": "table"
+      }
+    }
+  ]
+}

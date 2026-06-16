@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Alumnos — v1.0</title>
+    <style>
+        :root {
+            --primary: #1976d2;
+            --primary-dark: #1565c0;
+            --accent: #ff6f00;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #263238;
+            --text-light: #546e7a;
+            --border: #e0e0e0;
+            --success: #2e7d32;
+            --tag-bg: #e3f2fd;
+            --tag-text: #1565c0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ── Header ──────────────────────────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d47a1 100%);
+            color: #fff;
+            padding: 48px 24px 40px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        .header .badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.18);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Layout ──────────────────────────────────────────────── */
+        .container {
+            max-width: 960px;
+            margin: -24px auto 0;
+            padding: 0 20px 60px;
+        }
+
+        /* ── Cards ───────────────────────────────────────────────── */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h2 .icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        /* ── Documentation links ─────────────────────────────────── */
+        .doc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .doc-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+        }
+        .doc-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border-color: var(--primary);
+        }
+        .doc-link .doc-icon {
+            font-size: 1.6rem;
+            width: 44px; height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--tag-bg);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        .doc-link .doc-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .doc-link .doc-desc {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        /* ── Endpoints table ─────────────────────────────────────── */
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .endpoint-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+        .endpoint-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .endpoint-table tr:last-child td { border-bottom: none; }
+
+        .method-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            min-width: 52px;
+            text-align: center;
+        }
+        .method-get    { background: #e8f5e9; color: #2e7d32; }
+        .method-post   { background: #e3f2fd; color: #1565c0; }
+        .method-put    { background: #fff3e0; color: #e65100; }
+        .method-delete { background: #ffebee; color: #c62828; }
+
+        .path-mono {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.88rem;
+            color: var(--text);
+        }
+
+        /* ── Footer ──────────────────────────────────────────────── */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* ── Responsive ──────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .header { padding: 32px 16px 28px; }
+            .header h1 { font-size: 1.7rem; }
+            .card { padding: 20px; }
+            .doc-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="header">
+    <h1>API Alumnos</h1>
+    <p class="subtitle">CRUD de alumnos con importación y exportación CSV</p>
+    <span class="badge">v1.0</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- CONTENT                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="container">
+
+    <!-- ── Documentación ────────────────────────────────────────── -->
+    <div class="card">
+        <h2>
+            <span class="icon" style="background:#e3f2fd;color:#1565c0;">📖</span>
+            Documentación
+        </h2>
+        <div class="doc-grid">
+            <a href="/swagger-ui.html" class="doc-link" target="_blank">
+                <span class="doc-icon">🧪</span>
+                <span>
+                    <div class="doc-label">Swagger UI</div>
+                    <div class="doc-desc">Probar endpoints interactivamente</div>
+                </span>
+            </a>
+            <a href="/redoc.html" class="doc-link" target="_blank">
+                <span class="doc-icon">📄</span>
+                <span>
+                    <div class="doc-label">ReDoc</div>
+                    <div class="doc-desc">Documentación legible y estilizada</div>
+                </span>
+            </a>
+            <a href="/v3/api-docs" class="doc-link" target="_blank">
+                <span class="doc-icon">{ }</span>
+                <span>
+                    <div class="doc-label">OpenAPI JSON</div>
+                    <div class="doc-desc">Especificación OpenAPI 3.0 cruda</div>
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Endpoints ────────────────────────────────────────────── -->
+    <div class="card">
+        <h2>
+            <span class="icon" style="background:#e8f5e9;color:#2e7d32;">🔗</span>
+            Endpoints disponibles
+        </h2>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Método</th>
+                    <th>Ruta</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-tag method-get">GET</span></td>
+                    <td><code class="path-mono">/alumnos</code></td>
+                    <td>Listar todos los alumnos</td>
+                </tr>
+                <tr>
+                    <td><span class="method-tag method-post">POST</span></td>
+                    <td><code class="path-mono">/alumnos</code></td>
+                    <td>Crear un nuevo alumno</td>
+                </tr>
+                <tr>
+                    <td><span class="method-tag method-put">PUT</span></td>
+                    <td><code class="path-mono">/alumnos/{id}</code></td>
+                    <td>Actualizar un alumno existente</td>
+                </tr>
+                <tr>
+                    <td><span class="method-tag method-delete">DELETE</span></td>
+                    <td><code class="path-mono">/alumnos/{id}</code></td>
+                    <td>Eliminar un alumno</td>
+                </tr>
+                <tr>
+                    <td><span class="method-tag method-get">GET</span></td>
+                    <td><code class="path-mono">/alumnos/export</code></td>
+                    <td>Exportar alumnos a CSV</td>
+                </tr>
+                <tr>
+                    <td><span class="method-tag method-post">POST</span></td>
+                    <td><code class="path-mono">/alumnos/import</code></td>
+                    <td>Importar alumnos desde CSV</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Modelo de datos ──────────────────────────────────────── -->
+    <div class="card">
+        <h2>
+            <span class="icon" style="background:#fff3e0;color:#e65100;">📦</span>
+            Modelo de datos — Alumno
+        </h2>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Campo</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code class="path-mono">id</code></td>
+                    <td><code class="path-mono">Long</code></td>
+                    <td>Identificador único (auto-generado)</td>
+                </tr>
+                <tr>
+                    <td><code class="path-mono">nombre</code></td>
+                    <td><code class="path-mono">String</code></td>
+                    <td>Nombre del alumno</td>
+                </tr>
+                <tr>
+                    <td><code class="path-mono">apellido</code></td>
+                    <td><code class="path-mono">String</code></td>
+                    <td>Apellido del alumno</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                          -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<div class="footer">
+    API Alumnos &middot; Spring Boot 3.5 &middot; Java 21 &middot; Maven
+</div>
+
+</body>
+</html>

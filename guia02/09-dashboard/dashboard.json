@@ -1,0 +1,249 @@
+{
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 1,
+      "properties": {
+        "markdown": "# 📊 Dashboard de Observabilidad — EKS Cluster\n## Métricas clave: Tiempo de despliegue, Cobertura de pruebas, Uso de CPU/Memoria, Errores registrados"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Uso de CPU por Pod",
+        "metrics": [
+          [ "ContainerInsights", "pod_cpu_utilization", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", "Pod", "alumnos-backend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-frontend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-db", { "stat": "Average", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 60,
+        "stat": "Average"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Uso de Memoria por Pod",
+        "metrics": [
+          [ "ContainerInsights", "pod_memory_working_set", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", "Pod", "alumnos-backend", { "stat": "Average", "period": 60, "yAxis": "right" } ],
+          [ "...", "alumnos-frontend", { "stat": "Average", "period": 60 } ],
+          [ "...", "alumnos-db", { "stat": "Average", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 60,
+        "stat": "Average"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 1,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Tráfico de Red (RX/TX)",
+        "metrics": [
+          [ "ContainerInsights", "pod_network_rx_bytes", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", { "stat": "Sum", "period": 60 } ],
+          [ "...", "pod_network_tx_bytes", { "stat": "Sum", "period": 60 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 60,
+        "stat": "Sum"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Errores en Logs (Backend)",
+        "metrics": [
+          [ "AWS/Logs", "IncomingBytes", "LogGroup", "/aws/eks/laboratorio-eks/application", { "stat": "Sum", "period": 300 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 300,
+        "stat": "Sum",
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Umbral de error",
+              "value": 1000,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Tiempo de Despliegue (Deploy Duration)",
+        "metrics": [
+          [ "Custom", "DeployDuration", "Service", "backend", { "stat": "Average", "period": 300 } ],
+          [ "...", "frontend", { "stat": "Average", "period": 300 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 300,
+        "stat": "Average",
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Objetivo (<5 min)",
+              "value": 300,
+              "color": "#2ca02c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 7,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Cobertura de Pruebas (Test Coverage)",
+        "metrics": [
+          [ "Custom", "TestCoverage", "Project", "backend", { "stat": "Average", "period": 86400 } ],
+          [ "...", "frontend", { "stat": "Average", "period": 86400 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 86400,
+        "stat": "Average",
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "Objetivo (>80%)",
+              "value": 80,
+              "color": "#2ca02c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Estado de Pods (Running/Pending/Failed)",
+        "metrics": [
+          [ "ContainerInsights", "pod_number_of_container_status_running", "ClusterName", "laboratorio-eks", "Namespace", "alumnos", { "stat": "Average", "period": 60, "label": "Running" } ],
+          [ "...", "pod_number_of_container_status_pending", { "stat": "Average", "period": 60, "label": "Pending" } ],
+          [ "...", "pod_number_of_container_status_failed", { "stat": "Average", "period": 60, "label": "Failed", "color": "#d62728" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 60,
+        "stat": "Average"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 8,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Alarmas Activas",
+        "metrics": [
+          [ "AWS/CloudWatch", "AlarmState", "AlarmName", "laboratorio-eks-backend-errors", { "stat": "Maximum", "period": 300 } ],
+          [ "...", "laboratorio-eks-pods-availability", { "stat": "Maximum", "period": 300 } ],
+          [ "...", "laboratorio-eks-high-cpu", { "stat": "Maximum", "period": 300 } ],
+          [ "...", "laboratorio-eks-high-memory", { "stat": "Maximum", "period": 300 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "period": 300,
+        "stat": "Maximum",
+        "annotations": {
+          "horizontal": [
+            {
+              "label": "ALERTA",
+              "value": 1,
+              "color": "#d62728"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "metric",
+      "x": 16,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "properties": {
+        "title": "Número de Despliegues",
+        "metrics": [
+          [ "Custom", "DeployCount", "Service", "backend", { "stat": "Sum", "period": 86400 } ],
+          [ "...", "frontend", { "stat": "Sum", "period": 86400 } ]
+        ],
+        "view": "timeSeries",
+        "stacked": true,
+        "region": "us-east-1",
+        "period": 86400,
+        "stat": "Sum"
+      }
+    },
+    {
+      "type": "log",
+      "x": 0,
+      "y": 19,
+      "width": 24,
+      "height": 6,
+      "properties": {
+        "title": "Últimos Errores en Logs",
+        "query": "SOURCE '/aws/eks/laboratorio-eks/application' | fields @timestamp, @message | filter @message like /ERROR|Exception|Error/ | sort @timestamp desc | limit 20",
+        "region": "us-east-1",
+        "stacked": false,
+        "view": "table"
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 25,
+      "width": 24,
+      "height": 2,
+      "properties": {
+        "markdown": "---\n### 📈 Métricas Personalizadas del Pipeline CI/CD\n\nPara visualizar **Tiempo de Despliegue** y **Cobertura de Pruebas**, el pipeline debe publicar métricas custom a CloudWatch. Ver `publicar-metricas.sh` para configuración."
+      }
+    }
+  ]
+}
