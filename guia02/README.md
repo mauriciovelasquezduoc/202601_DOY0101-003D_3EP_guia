@@ -2,30 +2,30 @@
 
 ## Descripción
 
-Esta guía contiene los pasos para configurar un entorno completo de DevOps con observabilidad, métricas y cumplimiento normativo en Amazon EKS.
+Guía completa para configurar un entorno DevOps con observabilidad, métricas y cumplimiento normativo en Amazon EKS.
 
 ## Indicadores de Evaluación
 
-| Indicador | Descripción | Peso | Paso |
-|-----------|-------------|------|------|
-| **IE1** | Herramientas de monitoreo (CloudWatch) | 20% | Paso 7 |
-| **IE2** | Despliegue en Kubernetes en la nube | 20% | Paso 4, 5, 13 |
-| **IE3** | Dashboard con métricas clave | 10% | Paso 8 |
-| **IE4** | Documentación de integración CI/CD | 10% | Paso 11 |
-| **IE5** | Políticas de cumplimiento automatizadas | 20% | Paso 12 |
-| **IE6** | Pipeline se detiene ante fallas críticas | 20% | Paso 10 |
+| Indicador | Descripción | Peso | Directorio |
+|-----------|-------------|------|------------|
+| **IE1** | Herramientas de monitoreo (CloudWatch) | 20% | `08-cloudwatch/` |
+| **IE2** | Despliegue en Kubernetes en la nube | 20% | `01-create-eks/`, `06-aplicacion/` |
+| **IE3** | Dashboard con métricas clave | 10% | `09-dashboard/` |
+| **IE4** | Documentación de integración CI/CD | 10% | `11-documentacion/` |
+| **IE5** | Políticas de cumplimiento automatizadas | 20% | `12-auditoria/` |
+| **IE6** | Pipeline se detiene ante fallas críticas | 20% | `06-aplicacion/` |
 
 ---
 
 ## Requisitos Previos
 
-### 1. Construir imagen Docker del laboratorio
+### 1. Docker
 
 ```bash
 docker build -t devops-eks-lab .
 ```
 
-### 2. Ejecutar contenedor Docker
+### 2. Ejecutar contenedor
 
 ```bash
 docker run -it \
@@ -35,7 +35,7 @@ docker run -it \
   devops-eks-lab
 ```
 
-### 3. Configurar credenciales AWS
+### 3. Configurar AWS
 
 ```bash
 aws configure
@@ -43,66 +43,27 @@ aws configure
 
 ---
 
-## Pasos del Laboratorio
+## Paso a Paso
 
-### Paso 1 — Validar entorno Docker + AWS
+### Paso 1 — Crear Cluster EKS
 
-**Objetivo:** Verificar que Docker, AWS CLI, kubectl y credenciales estén configurados.
+**Directorio:** `01-create-eks/`
 
 ```bash
-cd bloque06/etapa01-ValidaEntorno
+cd 01-create-eks
 bash ejecutar.sh
 ```
 
-**Resultado:** Entorno validado y listo para crear el clúster EKS.
+**Resultado:** Cluster EKS `laboratorio-eks` creado (~15 min).
 
 ---
 
-### Paso 2 — Crear VPC Multi-AZ con CloudFormation
+### Paso 2 — Crear Node Groups
 
-**Objetivo:** Desplegar VPC completa con subnets públicas/privadas y endpoints.
-
-```bash
-cd ../etapa02-CreaVPC
-bash ejecutar.sh
-```
-
-**Resultado:** VPC multi-AZ lista con subnets, endpoints y stack de CloudFormation.
-
----
-
-### Paso 3 — Validar tags EKS en subnets
-
-**Objetivo:** Verificar tags de EKS en subnets para descubrimiento y Load Balancers.
+**Directorio:** `02-create-groups/`
 
 ```bash
-cd ../etapa03-ValidaSubnets
-bash ejecutar.sh
-```
-
-**Resultado:** Subnets etiquetadas correctamente para EKS.
-
----
-
-### Paso 4 — Crear Cluster EKS + Conectar kubectl
-
-**Objetivo:** Desplegar cluster EKS con addons y NodeGroup SPOT.
-
-```bash
-cd ../etapa04-CreaClusterEKS
-bash ejecutar.sh
-```
-
-**Resultado:** Cluster EKS operativo con kubectl conectado (~15 min).
-
----
-
-### Paso 5 — Validar / Crear NodeGroup SPOT
-
-**Objetivo:** Verificar/crear NodeGroup con instancias t3.large SPOT.
-
-```bash
-cd ../etapa05-CreaNodeGroup
+cd ../02-create-groups
 bash ejecutar.sh
 ```
 
@@ -110,22 +71,80 @@ bash ejecutar.sh
 
 ---
 
-### Paso 6 — Validar Metrics Server + CloudWatch
+### Paso 3 — Crear Repositorios ECR
 
-**Objetivo:** Verificar monitoreo del cluster (metrics-server + CloudWatch).
+**Directorio:** `03-ecr/`
 
 ```bash
-cd ../etapa06-ValidaObservabilidad
+cd ../03-ecr
 bash ejecutar.sh
 ```
 
-**Resultado:** `kubectl top` funcionando y CloudWatch recibiendo logs.
+**Resultado:** Repositorios ECR listos para imágenes Docker.
 
 ---
 
-### Paso 7 — Configurar CloudWatch: Logs, Métricas y Alarmas ⭐ IE1
+### Paso 4 — Manifests de Kubernetes
 
-**Objetivo:** Configurar CloudWatch como herramienta completa de observabilidad.
+**Directorio:** `04-k8s/`
+
+Archivos disponibles:
+- `namespace.yaml` - Namespace de la aplicación
+- `backend-deployment.yaml` - Deployment del backend
+- `backend-service.yaml` - Service del backend
+- `k8s-Backend.sh` - Script de despliegue
+
+```bash
+cd ../04-k8s
+bash k8s-Backend.sh
+```
+
+**Resultado:** Backend desplegado en Kubernetes.
+
+---
+
+### Paso 5 — Configuración de GitHub
+
+**Directorio:** `05-github/`
+
+```bash
+cd ../05-github
+cat Readme.md
+```
+
+**Resultado:** Repositorio y secrets de GitHub configurados.
+
+---
+
+### Paso 6 — Aplicación Backend
+
+**Directorio:** `06-aplicacion/`
+
+```bash
+cd ../06-aplicacion
+```
+
+Contenido:
+- `src/` - Código fuente Java
+- `k8s/` - Manifests de Kubernetes
+- `.github/workflows/ci-cd-pipeline.yml` - Pipeline CI/CD unificado
+- `Dockerfile` - Docker para la aplicación
+- `pom.xml` - Configuración Maven
+
+**Pipeline CI/CD:**
+El pipeline ejecuta automáticamente:
+1. Security Scan (Snyk)
+2. Quality Check (SonarQube + PMD)
+3. Test Coverage (JaCoCo)
+4. Compliance Check
+5. Build & Push a ECR
+6. Deploy a EKS
+
+---
+
+### Paso 7 — CloudWatch: Logs, Métricas y Alarmas ⭐ IE1
+
+**Directorio:** `08-cloudwatch/`
 
 ```bash
 cd ../08-cloudwatch
@@ -139,17 +158,17 @@ bash verificar.sh
 ```
 
 **Resultado:**
-- Logs de todos los pods en CloudWatch
-- Métricas de CPU/memoria/red (Container Insights)
+- Fluent Bit enviando logs a CloudWatch
+- Container Insights con métricas de CPU/memoria/red
 - Alarmas para errores y disponibilidad
 
-**Cubre:** IE1 (20%) — Herramientas de monitoreo con CloudWatch.
+**Cubre:** IE1 (20%)
 
 ---
 
-### Paso 8 — Dashboard de Observabilidad en CloudWatch ⭐ IE3
+### Paso 8 — Dashboard de Observabilidad ⭐ IE3
 
-**Objetivo:** Crear dashboard con métricas clave del sistema.
+**Directorio:** `09-dashboard/`
 
 ```bash
 cd ../09-dashboard
@@ -174,52 +193,37 @@ https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashbo
 - Errores registrados
 - Estado de pods
 
-**Cubre:** IE3 (10%) — Dashboard con métricas clave.
+**Cubre:** IE3 (10%)
 
 ---
 
-### Paso 9 — Crear repositorios en Amazon ECR
-
-**Objetivo:** Crear repositorios ECR para imágenes Docker.
-
-```bash
-cd ../etapa07-PublicaECR
-bash ejecutar.sh
-```
-
-**Resultado:** Tres repositorios ECR listos (~2 min).
-
----
-
-### Paso 10 — Quality Gates integrados en el Pipeline CI/CD ⭐ IE6
-
-**Objetivo:** Quality gates automáticos que bloquean deploys con problemas.
+### Paso 9 — Quality Gates (Pipeline CI/CD) ⭐ IE6
 
 **Ubicación:** `06-aplicacion/.github/workflows/ci-cd-pipeline.yml`
 
+Los quality gates ya están integrados en el pipeline. Se ejecutan automáticamente en cada push a main o pull request.
+
 **Componentes:**
-- **Security Scan** (Snyk): Detecta vulnerabilidades críticas
-- **Quality Check** (SonarQube + PMD): Analiza calidad de código
-- **Test Coverage** (JaCoCo): Garantiza mínimo 80% de cobertura
-- **Compliance Check**: Valida documentación y archivos sensibles
-- **Deploy Gate**: Solo despliega si TODOS los checks pasan
+- **Security Scan** (Snyk): Vulnerabilidades críticas
+- **Quality Check** (SonarQube + PMD): Calidad de código
+- **Test Coverage** (JaCoCo): Mínimo 80% cobertura
+- **Compliance Check**: Documentación y archivos sensibles
+- **Deploy Gate**: Solo despliega si todo pasa
 
-**Configuración requerida en GitHub Secrets:**
-- `SNYK_TOKEN`: Token de Snyk (snyk.io/edu)
-- `SONAR_TOKEN`: Token de SonarQube (sonarcloud.io)
+**Configuración en GitHub Secrets:**
+- `SNYK_TOKEN`: Token de Snyk
+- `SONAR_TOKEN`: Token de SonarQube
+- `AWS_ACCESS_KEY_ID`: Credenciales AWS
+- `AWS_SECRET_ACCESS_KEY`: Credenciales AWS
+- `AWS_SESSION_TOKEN`: Token de sesión AWS
 
-**Branch Protection:**
-- Settings → Branches → Add rule
-- Branch name pattern: `main`
-- Require status checks: security-scan, quality-check, test-coverage
-
-**Cubre:** IE6 (20%) — Pipeline se detiene ante fallas críticas.
+**Cubre:** IE6 (20%)
 
 ---
 
-### Paso 11 — Documentación: Integración de Herramientas en CI/CD ⭐ IE4
+### Paso 10 — Documentación ⭐ IE4
 
-**Objetivo:** Generar documentación completa de integración.
+**Directorio:** `11-documentacion/`
 
 ```bash
 cd ../11-documentacion
@@ -237,13 +241,13 @@ bash verificar.sh
 - docs/ARQUITECTURA.md
 - docs/ADR.md
 
-**Cubre:** IE4 (10%) — Documentación de integración CI/CD.
+**Cubre:** IE4 (10%)
 
 ---
 
-### Paso 12 — Auditoría: Políticas de Cumplimiento Automatizadas ⭐ IE5
+### Paso 11 — Auditoría ⭐ IE5
 
-**Objetivo:** Verificar todas las políticas de cumplimiento configuradas.
+**Directorio:** `12-auditoria/`
 
 ```bash
 cd ../12-auditoria
@@ -258,81 +262,10 @@ bash verificar.sh
 
 **Resultado:**
 - Branch Protection verificado
-- SonarQube configurado
-- Snyk configurado
-- PMD configurado
-- JaCoCo configurado
+- Herramientas de cumplimiento verificadas
 - reporte-auditoria.txt generado
 
-**Cubre:** IE5 (20%) — Políticas de cumplimiento automatizadas.
-
----
-
-### Paso 13 — Publicar en GitHub + Desplegar en Kubernetes
-
-**Objetivo:** Desplegar aplicación completa en EKS.
-
-```bash
-cd ../etapa08-DespliegaK8s
-bash ejecutar.sh
-```
-
-**Resultado:** DB, Backend y Frontend corriendo en EKS (~15-20 min).
-
----
-
-### Paso 14 — Validación final + Operación Avanzada
-
-**Objetivo:** Verificar aplicación y demostrar capacidades avanzadas.
-
-```bash
-cd ../etapa09-ValidaApp
-bash ejecutar.sh
-```
-
-**Resultado:**
-- Auto-healing verificado
-- HPA funcionando
-- Métricas de CPU/memoria visibles
-
----
-
-### Paso 15 — Conectividad + URL de la aplicación
-
-**Objetivo:** Obtener URL pública de la aplicación.
-
-```bash
-cd ../etapa10-ConectividadURL
-bash ejecutar.sh
-```
-
-**Resultado:** URL de la aplicación lista para acceder desde navegador.
-
----
-
-### Paso 16 — Auditoría / Reporte completo del laboratorio
-
-**Objetivo:** Generar reporte completo de evidencia.
-
-```bash
-cd ../etapa11-Auditoria
-bash ejecutar.sh
-```
-
-**Resultado:** `reporte.txt` con checklist de evaluación.
-
----
-
-### Paso 17 — Limpieza total del laboratorio
-
-**Objetivo:** Eliminar todos los recursos creados.
-
-```bash
-cd ../etapa12-LimpiezaTotal
-bash ejecutar.sh
-```
-
-**Resultado:** Entorno completamente limpio.
+**Cubre:** IE5 (20%)
 
 ---
 
@@ -347,72 +280,54 @@ guia02/
 ├── 05-github/              # Configuración de GitHub
 ├── 06-aplicacion/          # Código fuente de la aplicación
 │   ├── .github/workflows/
-│   │   └── ci-cd-pipeline.yml   # Pipeline unificado
-│   ├── src/                # Código Java
-│   ├── k8s/                # Manifests K8s
+│   │   └── ci-cd-pipeline.yml
+│   ├── src/
+│   ├── k8s/
 │   ├── Dockerfile
-│   ├── pom.xml
-│   └── README.md
+│   └── pom.xml
 ├── 07-revision/            # Scripts de revisión
 ├── 08-cloudwatch/          # Configuración de CloudWatch
 ├── 09-dashboard/           # Dashboard de CloudWatch
 ├── 11-documentacion/       # Documentación del proyecto
 ├── 12-auditoria/           # Scripts de auditoría
 ├── Dockerfile              # Docker para el laboratorio
-├── backend-alumnos.zip     # Código fuente original
-└── pasos.md                # Pasos detallados
+└── README.md               # Este archivo
 ```
 
 ---
 
-## Herramientas Utilizadas
+## Herramientas
 
 | Categoría | Herramienta | Propósito |
 |-----------|-------------|-----------|
-| **Monitoreo** | CloudWatch Logs | Almacenamiento de logs |
-| | Container Insights | Métricas de CPU/memoria/red |
+| **Monitoreo** | CloudWatch Logs | Logs de la aplicación |
+| | Container Insights | Métricas de recursos |
 | | CloudWatch Alarms | Alertas automáticas |
-| | CloudWatch Dashboard | Visualización de métricas |
-| **CI/CD** | GitHub Actions | Automatización de pipeline |
-| | Snyk | Escaneo de seguridad |
-| | SonarQube | Análisis de calidad |
+| | CloudWatch Dashboard | Visualización |
+| **CI/CD** | GitHub Actions | Automatización |
+| | Snyk | Seguridad |
+| | SonarQube | Calidad |
 | | PMD | Análisis estático |
-| | JaCoCo | Cobertura de pruebas |
-| **Infraestructura** | Amazon EKS | Orquestación de contenedores |
-| | Amazon ECR | Registro de imágenes Docker |
-| | CloudFormation | Infraestructura como código |
-
----
-
-## Costos Estimados
-
-| Componente | Costo Mensual |
-|------------|---------------|
-| EKS Cluster | ~$73 USD |
-| EC2 (3x t3.large SPOT) | ~$30 USD |
-| CloudWatch | ~$5-10 USD |
-| ECR | ~$1 USD |
-| **Total** | **~$110-120 USD** |
-
-**Nota:** Para uso académico, AWS Academy proporciona créditos gratuitos.
+| | JaCoCo | Cobertura |
+| **Infraestructura** | Amazon EKS | Orquestación |
+| | Amazon ECR | Registro de imágenes |
 
 ---
 
 ## Solución de Problemas
 
-### El cluster EKS no responde
+### Cluster EKS no responde
 
 ```bash
 aws eks update-kubeconfig --region us-east-1 --name laboratorio-eks
 kubectl get nodes
 ```
 
-### Los pods no arrancan
+### Pods no arrancan
 
 ```bash
 kubectl get pods -n alumnos
 kubectl describe pod <pod-name> -n alumnos
-kubectl logs <pod-name> -n alumnos
 ```
 
 ### CloudWatch no recibe logs
@@ -422,16 +337,16 @@ kubectl get pods -n amazon-cloudwatch
 kubectl logs -l app=fluent-bit -n amazon-cloudwatch
 ```
 
-### El pipeline falla en quality gates
+### Pipeline falla en quality gates
 
-Revisar los logs en GitHub Actions → Seleccionar el workflow fallido → Revisar cada job.
+Verificar logs en GitHub Actions → Seleccionar workflow fallido → Revisar cada job.
 
 ---
 
 ## Referencias
 
-- [Amazon EKS Documentation](https://docs.aws.amazon.com/eks/)
+- [Amazon EKS](https://docs.aws.amazon.com/eks/)
 - [CloudWatch Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Snyk Documentation](https://docs.snyk.io/)
-- [SonarCloud Documentation](https://docs.sonarcloud.io/)
+- [GitHub Actions](https://docs.github.com/en/actions)
+- [Snyk](https://docs.snyk.io/)
+- [SonarCloud](https://docs.sonarcloud.io/)
