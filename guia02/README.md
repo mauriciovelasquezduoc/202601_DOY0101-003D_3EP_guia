@@ -28,11 +28,7 @@ docker build -t devops-eks-lab .
 ### 2. Ejecutar contenedor
 
 ```bash
-docker run -it \
-  -v "$(pwd)":/root/work \
-  -v ~/.aws:/root/.aws \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  devops-eks-lab
+docker run -it -v ".":/root/work -v ~/.aws:/root/.aws -v /var/run/docker.sock:/var/run/docker.sock devops-eks-lab
 ```
 
 ### 3. Configurar AWS
