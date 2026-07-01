@@ -6,18 +6,20 @@ Guía completa para configurar un entorno DevOps con observabilidad, métricas y
 
 ## Indicadores de Evaluación
 
-| Indicador | Descripción | Peso | Directorio |
-|-----------|-------------|------|------------|
-| **IE1** | Herramientas de monitoreo (CloudWatch) | 20% | `08-cloudwatch/` |
-| **IE2** | Despliegue en Kubernetes en la nube | 20% | `01-create-eks/`, `06-aplicacion/` |
-| **IE3** | Dashboard con métricas clave | 10% | `09-dashboard/` |
-| **IE4** | Documentación de integración CI/CD | 10% | `11-documentacion/` |
-| **IE5** | Políticas de cumplimiento automatizadas | 20% | `12-auditoria/` |
-| **IE6** | Pipeline se detiene ante fallas críticas | 20% | `06-aplicacion/` |
+| Indicador     | Descripción                              | Peso | Directorio                             |
+| ------------- | ----------------------------------------- | ---- | -------------------------------------- |
+| **IE1** | Herramientas de monitoreo (CloudWatch)    | 20%  | `08-cloudwatch/`                     |
+| **IE2** | Despliegue en Kubernetes en la nube       | 20%  | `01-create-eks/`, `06-aplicacion/` |
+| **IE3** | Dashboard con métricas clave             | 10%  | `09-dashboard/`                      |
+| **IE4** | Documentación de integración CI/CD      | 10%  | `11-documentacion/`                  |
+| **IE5** | Políticas de cumplimiento automatizadas  | 20%  | `12-auditoria/`                      |
+| **IE6** | Pipeline se detiene ante fallas críticas | 20%  | `06-aplicacion/`                     |
 
 ---
 
 ## Requisitos Previos
+
+Se debe iniciar todo con abrir la aplicación DockerDesktop y luego:
 
 ### 1. Docker
 
@@ -32,6 +34,8 @@ docker run -it -v ".":/root/work -v ~/.aws:/root/.aws -v /var/run/docker.sock:/v
 ```
 
 ### 3. Configurar AWS
+
+Se debe ingresar a aws acadmy, luego seleccionar el curso para posteriormente inicial el laboratorio, cuando ya este el icono con el color verde, se debe hacer click para ver el detalle y a partir de ahi sacar las credenciales:
 
 ```bash
 aws configure
@@ -85,6 +89,7 @@ bash ejecutar.sh
 **Directorio:** `04-k8s/`
 
 Archivos disponibles:
+
 - `namespace.yaml` - Namespace de la aplicación
 - `backend-deployment.yaml` - Deployment del backend
 - `backend-service.yaml` - Service del backend
@@ -118,9 +123,39 @@ cat Readme.md
 
 ```bash
 cd ../06-aplicacion
+git init 
+git add .
+git commit -m "feature: init"
 ```
 
+Antes de hacer push debes crear un access token
+
+1. click en el icono de tu cuenta en github
+2. ir a Settings
+3. Developers Settings
+4. Personal access tokens > tokens (classic)
+5. Generate new token > Generate new token (classic)
+6. Verificar el codigo por correo
+7. Poner el nomre al access token y poner todos los permisos y copiar el token
+
+Luego debes crear un repositorio vacio y rescatar el nombre del repositroio (reemplazar nombre_uusario y repositiro) en la consola luego lanzar
+
+```
+git remote add origin https://github.com/NOMBRE_USUARIO/REPOSITORIO.git
+```
+
+
+y finalmente hacer push a github
+
+```
+git push -u origin main
+```
+
+Ahi te pedira el usaurio y la contrasena, ahi pones el token y comenzara a subir el codigo
+
+
 Contenido:
+
 - `src/` - Código fuente Java
 - `k8s/` - Manifests de Kubernetes
 - `.github/workflows/ci-cd-pipeline.yml` - Pipeline CI/CD unificado
@@ -129,6 +164,7 @@ Contenido:
 
 **Pipeline CI/CD:**
 El pipeline ejecuta automáticamente:
+
 1. Security Scan (Snyk)
 2. Quality Check (SonarQube + PMD)
 3. Test Coverage (JaCoCo)
@@ -154,6 +190,7 @@ bash verificar.sh
 ```
 
 **Resultado:**
+
 - Fluent Bit enviando logs a CloudWatch
 - Container Insights con métricas de CPU/memoria/red
 - Alarmas para errores y disponibilidad
@@ -178,11 +215,13 @@ bash verificar.sh
 ```
 
 **URL del Dashboard:**
+
 ```
 https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=laboratorio-eks-observability
 ```
 
 **Resultado:**
+
 - Tiempo de despliegue
 - Cobertura de pruebas
 - Uso de CPU/memoria
@@ -200,6 +239,7 @@ https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashbo
 Los quality gates ya están integrados en el pipeline. Se ejecutan automáticamente en cada push a main o pull request.
 
 **Componentes:**
+
 - **Security Scan** (Snyk): Vulnerabilidades críticas
 - **Quality Check** (SonarQube + PMD): Calidad de código
 - **Test Coverage** (JaCoCo): Mínimo 80% cobertura
@@ -207,6 +247,7 @@ Los quality gates ya están integrados en el pipeline. Se ejecutan automáticame
 - **Deploy Gate**: Solo despliega si todo pasa
 
 **Configuración en GitHub Secrets:**
+
 - `SNYK_TOKEN`: Token de Snyk
 - `SONAR_TOKEN`: Token de SonarQube
 - `AWS_ACCESS_KEY_ID`: Credenciales AWS
@@ -233,6 +274,7 @@ bash verificar.sh
 ```
 
 **Resultado:**
+
 - DOCUMENTACION_CICD.md
 - docs/ARQUITECTURA.md
 - docs/ADR.md
@@ -257,6 +299,7 @@ bash verificar.sh
 ```
 
 **Resultado:**
+
 - Branch Protection verificado
 - Herramientas de cumplimiento verificadas
 - reporte-auditoria.txt generado
@@ -294,19 +337,19 @@ guia02/
 
 ## Herramientas
 
-| Categoría | Herramienta | Propósito |
-|-----------|-------------|-----------|
-| **Monitoreo** | CloudWatch Logs | Logs de la aplicación |
-| | Container Insights | Métricas de recursos |
-| | CloudWatch Alarms | Alertas automáticas |
-| | CloudWatch Dashboard | Visualización |
-| **CI/CD** | GitHub Actions | Automatización |
-| | Snyk | Seguridad |
-| | SonarQube | Calidad |
-| | PMD | Análisis estático |
-| | JaCoCo | Cobertura |
-| **Infraestructura** | Amazon EKS | Orquestación |
-| | Amazon ECR | Registro de imágenes |
+| Categoría                | Herramienta          | Propósito             |
+| ------------------------- | -------------------- | ---------------------- |
+| **Monitoreo**       | CloudWatch Logs      | Logs de la aplicación |
+|                           | Container Insights   | Métricas de recursos  |
+|                           | CloudWatch Alarms    | Alertas automáticas   |
+|                           | CloudWatch Dashboard | Visualización         |
+| **CI/CD**           | GitHub Actions       | Automatización        |
+|                           | Snyk                 | Seguridad              |
+|                           | SonarQube            | Calidad                |
+|                           | PMD                  | Análisis estático    |
+|                           | JaCoCo               | Cobertura              |
+| **Infraestructura** | Amazon EKS           | Orquestación          |
+|                           | Amazon ECR           | Registro de imágenes  |
 
 ---
 
@@ -346,3 +389,4 @@ Verificar logs en GitHub Actions → Seleccionar workflow fallido → Revisar ca
 - [GitHub Actions](https://docs.github.com/en/actions)
 - [Snyk](https://docs.snyk.io/)
 - [SonarCloud](https://docs.sonarcloud.io/)
+

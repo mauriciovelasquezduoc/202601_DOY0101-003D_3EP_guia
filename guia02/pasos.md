@@ -1,5 +1,6 @@
 # Bloque 06 — Pasos
 
+Se debe abrir la aplicación DockerDesktop
 
 ## Requisito previo
 
@@ -10,9 +11,11 @@ docker build -t devops-eks-lab .
 Debes estar dentro del contenedor Docker `devops-eks-lab` con las credenciales de AWS Academy configuradas:
 
 # Desde Windows PowerShell / CMD (fuera del contenedor):
+
 docker run -it -v "..":/root/work -v ~/.aws:/root/.aws -v /var/run/docker.sock:/var/run/docker.sock devops-eks-lab
 
 # Ya dentro del contenedor, configurar AWS:
+
 aws configure
 
 
@@ -121,6 +124,7 @@ bash ejecutar.sh
 
 **¿Qué se logra?**
 Observabilidad completa con CloudWatch:
+
 - **Logs**: Fluent Bit envía logs de todos los pods a CloudWatch Logs
 - **Métricas**: Container Insights recolecta CPU, memoria, red y disco
 - **Errores**: Alarmas detectan patrones de error en logs
@@ -148,6 +152,7 @@ bash ejecutar.sh
 
 **¿Qué se logra?**
 Un dashboard funcional y detallado en CloudWatch con:
+
 - **Tiempo de despliegue**: Métrica custom que registra la duración de cada deploy
 - **Cobertura de pruebas**: Métrica custom con el porcentaje de cobertura
 - **Uso de CPU/memoria**: Métricas de Container Insights por pod
@@ -161,6 +166,7 @@ bash verificar.sh
 ```
 
 **URL del Dashboard:**
+
 ```
 https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=laboratorio-eks-observability
 ```
@@ -188,6 +194,7 @@ Tres repositorios ECR listos para recibir imágenes Docker. Tiempo estimado: ~2 
 Los quality gates ya están integrados en el pipeline CI/CD de la aplicación (`06-aplicacion/.github/workflows/ci-cd-pipeline.yml`). El pipeline ejecuta automáticamente: Security Scan (Snyk), Quality Check (SonarQube + PMD), Test Coverage (JaCoCo) y Compliance Check antes de cada deploy.
 
 **¿Qué se logra?**
+
 - **Security Scan**: Snyk detecta vulnerabilidades críticas
 - **Quality Check**: SonarQube + PMD analizan calidad de código
 - **Test Coverage**: JaCoCo garantiza mínimo 80% de cobertura
@@ -198,10 +205,12 @@ Los quality gates ya están integrados en el pipeline CI/CD de la aplicación (`
 El pipeline se ejecuta automáticamente en cada push a main o pull request. Verificar en GitHub Actions.
 
 **Configuración requerida en GitHub Secrets:**
+
 - `SNYK_TOKEN`: Token de Snyk (snyk.io/edu)
 - `SONAR_TOKEN`: Token de SonarQube (sonarcloud.io)
 
 **Branch Protection en GitHub:**
+
 - Settings → Branches → Add rule
 - Branch name pattern: `main`
 - Require status checks: security-scan, quality-check, test-coverage
@@ -221,6 +230,7 @@ bash ejecutar.sh
 ```
 
 **¿Qué se logra?**
+
 - **DOCUMENTACION_CICD.md**: Documentación principal de integración
 - **docs/ARQUITECTURA.md**: Diagramas y arquitectura del sistema
 - **docs/ADR.md**: Decisiones arquitectónicas registradas
@@ -248,6 +258,7 @@ bash ejecutar.sh
 ```
 
 **¿Qué se logra?**
+
 - **Branch Protection**: Verificación de reglas de protección de rama
 - **SonarQube**: Verificación de quality gate
 - **Snyk**: Verificación de escaneo de seguridad
